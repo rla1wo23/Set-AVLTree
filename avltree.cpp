@@ -53,6 +53,7 @@ private:
     }
     Node *insert(Node *node, int key){};
     Node *findMinNode(Node *node){};
+    Node *findMaxNode(Node *node){};
     Node *erase(Node *node, int key){};
     int findDepth(Node *node, int key, int depth){};
     int findRank(Node *node, int key){};
@@ -62,7 +63,11 @@ public:
     ~AVLTree();
     void insert(int key);
     void erase(int key);
-    int find(int key);
+    void find(int key)
+    {
+        int depth = findDepth(root, key, 1);
+        std::cout << depth << std::endl;
+    }
     int rank(int key);
     void minimum();
     void maximum();
