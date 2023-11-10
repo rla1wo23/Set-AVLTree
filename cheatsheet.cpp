@@ -331,7 +331,6 @@ int main()
     std::cin >> T;
     while (T--)
     {
-        // Example usage
         set.insert(5);
         set.insert(3);
         set.insert(7);

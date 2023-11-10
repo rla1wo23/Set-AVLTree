@@ -12,7 +12,51 @@ class AVLTree
 {
 private:
     Node *root;
-    // AVL Tree의 회전 연산 및 기타 도움 함수들을 정의합니다.
+    int height(Node *node)
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        return node->height;
+    }
+
+    int balanceFactor(Node *node)
+    {
+        if (node == nullptr)
+        {
+            return 0;
+        }
+        return height(node->left) - height(node->right);
+    }
+
+    Node *rotateRight(Node *y)
+    {
+        Node *x = y->left;
+        Node *T = x->right;
+        x->right = y;
+        y->left = T;
+        y->height = 1 + std::max(height(y->left), height(y->right));
+        x->height = 1 + std::max(height(x->left), height(x->right));
+        return x;
+    }
+    Node *rotateLeft(Node *x)
+    {
+        Node *y = x->right;
+        Node *T = y->left;
+        y->left = x;
+        x->right = T;
+        x->height = 1 + std::max(height(x->left), height(x->right));
+        y->height = 1 + std::max(height(y->left), height(y->right));
+
+        return y;
+    }
+    Node *insert(Node *node, int key){};
+    Node *findMinNode(Node *node){};
+    Node *erase(Node *node, int key){};
+    int findDepth(Node *node, int key, int depth){};
+    int findRank(Node *node, int key){};
+
 public:
     AVLTree() : root(nullptr) {}
     ~AVLTree();
@@ -25,50 +69,42 @@ public:
     bool empty();
     int size();
 
-    // AVL Tree의 삽입, 삭제, 탐색, 랭크, 최솟값, 최댓값, 비어 있는지 여부, 크기를 수행하는 함수들을 정의합니다.
+private:
+    int number_of_nodes_ = 0;
 };
 
 AVLTree::~AVLTree()
 {
-    // AVL Tree의 노드들을 삭제하는 로직을 추가할 수 있습니다.
 }
 
 void AVLTree::insert(int key)
 {
-    // AVL Tree에 새로운 노드를 삽입하는 로직을 추가할 수 있습니다.
 }
 
 void AVLTree::erase(int key)
 {
-    // AVL Tree에서 노드를 삭제하는 로직을 추가할 수 있습니다.
 }
 
 int AVLTree::find(int key)
 {
-    // AVL Tree에서 노드를 탐색하는 로직을 추가할 수 있습니다.
 }
 
 int AVLTree::rank(int key)
 {
-    // AVL Tree에서 노드의 랭크를 찾는 로직을 추가할 수 있습니다.
 }
 
 void AVLTree::minimum()
 {
-    // AVL Tree에서 최솟값을 찾는 로직을 추가할 수 있습니다.
 }
 
 void AVLTree::maximum()
 {
-    // AVL Tree에서 최댓값을 찾는 로직을 추가할 수 있습니다.
 }
 
 bool AVLTree::empty()
 {
-    // AVL Tree가 비어 있는지 여부를 판별하는 로직을 추가할 수 있습니다.
 }
 
 int AVLTree::size()
 {
-    // AVL Tree의 크기를 찾는 로직을 추가할 수 있습니다.
 }
