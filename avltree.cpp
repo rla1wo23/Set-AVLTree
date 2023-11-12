@@ -12,7 +12,7 @@ class AVLTree
 {
 private:
     Node *root;
-    int height(Node *node)
+    int Height(Node *node)
     {
         if (node == nullptr)
         {
@@ -27,7 +27,7 @@ private:
         {
             return 0;
         }
-        return height(node->left) - height(node->right);
+        return Height(node->left) - Height(node->right);
     }
 
     Node *rotateRight(Node *y)
@@ -36,8 +36,8 @@ private:
         Node *T = x->right;
         x->right = y;
         y->left = T;
-        y->height = 1 + std::max(height(y->left), height(y->right));
-        x->height = 1 + std::max(height(x->left), height(x->right));
+        y->height = 1 + std::max(Height(y->left), Height(y->right));
+        x->height = 1 + std::max(Height(x->left), Height(x->right));
         return x;
     }
     Node *rotateLeft(Node *x)
@@ -46,8 +46,8 @@ private:
         Node *T = y->left;
         y->left = x;
         x->right = T;
-        x->height = 1 + std::max(height(x->left), height(x->right));
-        y->height = 1 + std::max(height(y->left), height(y->right));
+        x->height = 1 + std::max(Height(x->left), Height(x->right));
+        y->height = 1 + std::max(Height(y->left), Height(y->right));
 
         return y;
     }

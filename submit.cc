@@ -1,19 +1,51 @@
 #include <algorithm>
 #include <iostream>
 
-struct Node
-{
-    int key;
-    int height = 1;
-    Node *left = nullptr;
-    Node *right = nullptr;
-};
-
 class AVLTree
 {
 public:
+    struct Node
+    {
+        int key;
+        int height = 0;
+        Node *left = nullptr;
+        Node *right = nullptr;
+    };
+
+public:
+    AVLTree()
+    {
+        this->root_ = nullptr;
+    }
+    int Insert(int new_key)
+    {
+        Node *newNode = InsertNode(this->root_, new_key);
+        return root_->height - newNode->height;
+    }
+    // 최솟값 찾기
+    void minimum(int x)
+    {
+        Node *root_of_subtree = FindNodePtr(x);
+        std::cout << FindMinimumNode(root_of_subtree) << "\b";
+    } // 최댓값 찾기
+
+    void maximum(int x)
+    {
+        Node *root_of_subtree = FindNodePtr(x);
+        Node *maximum_node = FindMaximumNode(root_of_subtree);
+        std::cout << maximum_node->key << " ";
+        std::cout << root_->height - maximum_node->height << "\n";
+    }
+    void rank(int x)
+    {
+    }
+    void erase()
+    {
+    }
+
+private:
     Node *root_;
-    Node *FindNodePtr(int find_target) // 찾고자 하는 노드의 포인터를 반환합니다.
+    Node *FindNodePtr(int find_target) // 찾고자 하는 노드의 포인터를 반환. input:key, output: 해당 key를 가진 노드의 포인터
     {
         Node *iterator = root_;
         while (iterator != nullptr && iterator->key != find_target)
@@ -22,36 +54,19 @@ public:
         }
         return iterator;
     }
-    // 재귀적으로 Node를 삽입하려는 것으로, 현재 탐색하는 노드의 위치를 노드 포인터형으로 반환합니다.
-    Node *InsertNode(Node *iterator, int key_of_new_node){};
-    // 노드를 삭제합니다.
-    Node *EraseNode(Node *root_node, int item){};
-
-    void DoBalncing(Node *&root, int target_key) // root노드와 어떤 키를 기준으로 Roating하는지를 정의합니다.
+    // 재귀적으로 Node를 삽입하려는 것으로, 현재 탐색중인 노드를 포인터형으로 반환합니다. input:현재 노드의 위치, 삽입하려는 키 output: 탐색해볼 위치
+    Node *InsertNode(Node *iterator, int key_of_new_node){
+        // 1.node_counter를 증가
+        // 2.Balance 체크 후 깨졌다면 AdjustBlance 함수를 호출해서 로테이션을 적절히 수행
+    };
+    Node *EraseNode(Node *root_node, int key_of_target){}; // 노드를 삭제합니다.
+    bool IsEmpty()
     {
-        int balance_factor = CalculateBalance(root);
-        if (balance_factor == -1 || balance_factor == 0 || balance_factor == 1)
-        {
-            return;
-        }
-        if (balance_factor > 1 && target_key < root->left->key)
-        {
-            root = RightRotation(root);
-        }
-        else if (balance_factor > 1 && target_key > root->left->key)
-        {
-            root->left = LeftRotation(root->left);
-            root = RightRotation(root);
-        }
-        else if (balance_factor < -1 && target_key > root->right->key)
-        {
-            root = LeftRotation(root);
-        }
-        else if (balance_factor < -1 && target_key < root->right->key)
-        {
-            root->right = RightRotation(root->right);
-            root = LeftRotation(root);
-        }
+        return node_counter_ == 0;
+    }
+    int Size()
+    {
+        return node_counter_;
     }
     int height(Node *target_node) // getter(height)
     {
@@ -64,27 +79,57 @@ public:
     {
         return target_node->left->height - target_node->right->height;
     }
-
-    Node *LeftRotation(Node *x) // 왼쪽 Roation을 수행합니다.
+    Node *LeftRotation(Node *old_axis) // 왼쪽 Roation을 수행합니다.
     {
-        Node *y = x->right;
-        x->right = y->left;
-        y->left = x;
-        x->height = std::max(height(x->left), height(x->right)) + 1;
-        y->height = std::max(height(y->left), height(y->right)) + 1;
-
-        return y;
+        Node *new_axis = old_axis->right;
+        if (new_axis->left != nullptr)
+        {
+            old_axis->right = new_axis->left;
+        }
+        new_axis->left = old_axis;
+        old_axis->height = std::max(height(old_axis->left), height(old_axis->right)) + 1; // height재조정
+        new_axis->height = std::max(height(new_axis->left), height(new_axis->right)) + 1;
+        return new_axis;
     }
-    Node *RightRotation(Node *y)
+    Node *RightRotation(Node *old_axis)
     {
-        Node *x = y->left;
-        y->left = x->right;
-        x->right = y;
-        y->height = std::max(height(y->left), height(y->right)) + 1;
-        x->height = std::max(height(x->left), height(x->right)) + 1;
-
-        return x;
+        Node *new_axis = old_axis->left;
+        if (new_axis->right != nullptr)
+        {
+            old_axis->left = new_axis->right;
+        }
+        new_axis->right = old_axis;
+        old_axis->height = std::max(height(old_axis->left), height(old_axis->right)) + 1;
+        new_axis->height = std::max(height(new_axis->left), height(new_axis->right)) + 1;
+        return new_axis;
     }
+    void AdjustBlance(Node *&root, int target_key) // root노드와 어떤 키를 기준으로 밸런스를 맞출지 정의합니다.
+    {
+        int balance_factor = CalculateBalance(root);
+        if (balance_factor == -1 || balance_factor == 0 || balance_factor == 1) // 균형이 맞음, 밸런스 조정필요 없음
+        {
+            return;
+        }
+        if (balance_factor > 1 && target_key < root->left->key) // 왼쪽이 더 큰 트리, ll의 경우
+        {
+            root = RightRotation(root);
+        }
+        else if (balance_factor > 1 && target_key > root->left->key) // lr상황
+        {
+            root->left = LeftRotation(root->left);
+            root = RightRotation(root);
+        }
+        else if (balance_factor < -1 && target_key > root->right->key) // rr상황
+        {
+            root = LeftRotation(root);
+        }
+        else if (balance_factor < -1 && target_key < root->right->key) // rl상황
+        {
+            root->right = RightRotation(root->right);
+            root = LeftRotation(root);
+        }
+    }
+
     Node *FindMinimumNode(Node *x)
     {
         while (x->left != nullptr)
@@ -102,45 +147,23 @@ public:
         return x;
     }
 
-public:
-    AVLTree()
-    {
-        this->root_ = nullptr;
-    }
-    int Insert(int new_key)
-    {
-        Node *newNode = InsertNode(this->root_, new_key);
-        return root_->height - newNode->height;
-    }
-
-    // 최솟값 찾기
-    void minimum(int x)
-    {
-        Node *root_of_subtree = FindNodePtr(x);
-        std::cout << FindMinimumNode(root_of_subtree) << "\b";
-    } // 최댓값 찾기
-
-    void maximum(int x)
-    {
-        Node *root_of_subtree = FindNodePtr(x);
-        Node *maximum_node = FindMaximumNode(root_of_subtree);
-        std::cout << maximum_node->key << " ";
-        std::cout << root_->height - maximum_node->height << "\n";
-    }
-
-    void erase()
-    {
-    }
+private:
+    int node_counter_ = 0;
 };
 class Set
 {
 public:
-private:
+    Set()
+    {
+        tree = AVLTree();
+    }
+
+public:
     AVLTree tree;
 };
 int main()
 {
-    AVLTree tree;
+    Set s;
 
     return 0;
 }

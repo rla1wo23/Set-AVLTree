@@ -44,8 +44,8 @@ private:
             root_of_subtree->left = InsertNode(root_of_subtree->left, key_of_new_node);
         }
         root_of_subtree->height = std::max(height(root_of_subtree->left), height(root_of_subtree->right)) + 1;
-        DoBalncing(root_of_subtree, key_of_new_node); // 새로운 노드가 추가되었으므로 재귀적으로 부모노드들 높이 1증가 시켜주고
-                                                      // Balace Factor 측정하여 2이상이라면 재조정함수
+        AdjustBlance(root_of_subtree, key_of_new_node); // 새로운 노드가 추가되었으므로 재귀적으로 부모노드들 높이 1증가 시켜주고
+                                                        // Balace Factor 측정하여 2이상이라면 재조정함수
         return root_of_subtree;
     }
 
@@ -68,14 +68,14 @@ private:
         if (r != nullptr)
         {
             r->height = std::max(height(r->left), height(r->right)) + 1;
-            DoBalncing(r, item);
+            AdjustBlance(r, item);
         }
 
         return r;
     }
 
     /* balance Factor 측정후 재조정*/
-    void DoBalncing(Node *&r, int item)
+    void AdjustBlance(Node *&r, int item)
     {
         int balance_factor = CalculateBalance(r);
 
