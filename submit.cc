@@ -1,21 +1,26 @@
 #include <algorithm>
 #include <iostream>
-
+struct Node
+{
+    int key;
+    int height = 0;
+    Node *left = nullptr;
+    Node *right = nullptr;
+};
 class AVLTree
 {
-public:
-    struct Node
-    {
-        int key;
-        int height = 0;
-        Node *left = nullptr;
-        Node *right = nullptr;
-    };
-
-public:
-    AVLTree()
+public:       // 자식 클래스에서 public함수를 통해서만 AVLTree에 접근할 수 있게끔 합니다.
+    AVLTree() // Rule of Three를 만족하게끔 1)복사생성자 2)소멸자를 적절히 추가해야 합니다.
     {
         this->root_ = nullptr;
+    }
+    bool IsEmpty()
+    {
+        return node_counter_ == 0;
+    }
+    int Size()
+    {
+        return node_counter_;
     }
     int Insert(int new_key)
     {
@@ -26,7 +31,7 @@ public:
     void minimum(int x)
     {
         Node *root_of_subtree = FindNodePtr(x);
-        std::cout << FindMinimumNode(root_of_subtree) << "\b";
+        std::cout << FindMinimumNode(root_of_subtree) << "\n";
     } // 최댓값 찾기
 
     void maximum(int x)
@@ -43,7 +48,7 @@ public:
     {
     }
 
-private:
+protected: // protected부분은 자식 클래스에서 직접 호출해서 사용할 수 없으므로 아래 함수들은 public함수를 통해서 접근해서 도구적으로 사용됩니다.
     Node *root_;
     Node *FindNodePtr(int find_target) // 찾고자 하는 노드의 포인터를 반환. input:key, output: 해당 key를 가진 노드의 포인터
     {
@@ -60,14 +65,7 @@ private:
         // 2.Balance 체크 후 깨졌다면 AdjustBlance 함수를 호출해서 로테이션을 적절히 수행
     };
     Node *EraseNode(Node *root_node, int key_of_target){}; // 노드를 삭제합니다.
-    bool IsEmpty()
-    {
-        return node_counter_ == 0;
-    }
-    int Size()
-    {
-        return node_counter_;
-    }
+
     int height(Node *target_node) // getter(height)
     {
         if (target_node == nullptr)
@@ -147,16 +145,30 @@ private:
         return x;
     }
 
-private:
+protected:
     int node_counter_ = 0;
 };
-class Set
+class Set : public AVLTree
 {
 public:
     Set()
     {
         tree = AVLTree();
     }
+    void minimum(int X);
+    void maximum(int X);
+    void empty()
+    {
+        std::cout << tree.IsEmpty();
+    }
+    void size()
+    {
+        std::cout << tree.Size();
+    }
+    void find(int x);
+    void insert(int x);
+    void rank(int x);
+    void erase(int x);
 
 public:
     AVLTree tree;
